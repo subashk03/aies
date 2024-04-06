@@ -1,11 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from xgboost import XGBRegressor
 import joblib
-
-# Load the model
-model = joblib.load('car_price_predictor.pkl')
 
 # Function to preprocess input data
 def preprocess_input(car_data):
@@ -29,14 +25,14 @@ def preprocess_input(car_data):
     return car_data
 
 # Function to predict selling price
-def predict_selling_price(car_data):
+def predict_selling_price(car_data, model):
     car_data = preprocess_input(car_data)
     prediction = model.predict(car_data)
     return prediction[0]
 
 # Streamlit UI
 def main():
-    st.title('Car Selling Price Prediction')
+    st.title('Car Selling Price Predictor')
 
     st.write('Enter the details of the car to predict its selling price:')
     year = st.number_input('Year', min_value=1950, max_value=2024, step=1)
@@ -56,9 +52,10 @@ def main():
                             'Owner': [owner]})
     
     if st.button('Predict'):
-        selling_price_prediction = predict_selling_price(car_data)
+        # Load the pre-trained model
+        model = joblib.load('car_price_predictor.pkl')
+        selling_price_prediction = predict_selling_price(car_data, model)
         st.write(f'Predicted Selling Price: {selling_price_prediction:.2f} Lakhs')
 
 if __name__ == '__main__':
     main()
-
